@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> Telecom Customer Churn Prediction & Tracking Portal</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --bi-bg: #f3f4f6;
+            --bi-card-bg: #ffffff;
+            --bi-primary: #3b82f6;
+            --bi-dark: #1e293b;
+        }
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bi-bg);
+            color: var(--bi-dark);
+        }
+        .powerbi-ribbon {
+            background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
+            color: #ffffff;
+            border-radius: 0.75rem;
+            padding: 1.5rem 2rem;
+            box-shadow: 0 10px 25px -5px rgba(30, 27, 75, 0.2);
+        }
+        .nav-pills .nav-link {
+            border-radius: 0.5rem;
+            font-weight: 600;
+            padding: 0.75rem 1.5rem;
+            color: #4338ca;
+            background: #ffffff;
+            border: 1px solid #c7d2fe;
+            transition: all 0.2s ease-in-out;
+            text-align: left;
+            margin-bottom: 0.5rem;
+            width: 100%;
+        }
+        .nav-pills .nav-link.active {
+            background-color: #4f46e5;
+            color: #ffffff;
+            border-color: #4f46e5;
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+        }
+        .bi-kpi-card {
+            background: var(--bi-card-bg);
+            border-left: 5px solid #4f46e5;
+            border-radius: 0.5rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            transition: all 0.2s ease;
+        }
+        .bi-kpi-card:hover {
+            box-shadow: 0 8px 15px rgba(0,0,0,0.08);
+            transform: translateY(-2px);
+        }
+        .bi-visual-card {
+            background: var(--bi-card-bg);
+            border: 1px solid #e2e8f0;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+            transition: all 0.2s ease;
+        }
+        .form-control, .form-select {
+            border-radius: 0.5rem;
+            border: 1px solid #cbd5e1;
+            padding: 0.6rem 0.75rem;
+        }
+        .form-control:focus, .form-select:focus {
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+        }
+        .btn-bi {
+            background-color: #4f46e5;
+            border: none;
+            font-weight: 600;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+        }
+        .btn-bi:hover {
+            background-color: #4338ca;
+        }
+    </style>
+</head>
+<body class="py-4">
+
+    <div class="container-fluid px-4">
+        <!-- Power BI Header Ribbon -->
+        <div class="powerbi-ribbon d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <span class="badge bg-indigo bg-opacity-25 text-light mb-1 px-2 py-1 rounded-1" style="background: rgba(255,255,255,0.15); font-size: 0.75rem;">POWER BI ANALYTICS & TRACKING WORKSPACE</span>
+                <h2 class="fw-bold mb-0"> Telecom Customer Churn Prediction Portal</h2>
+                <p class="text-indigo-200 mb-0 small opacity-75">Behavior Tracking, Predictive Modeling & Retention Strategy</p>
+            </div>
+            <div>
+                <a href="/logout" class="btn btn-outline-light btn-sm fw-semibold px-3 py-2 rounded-2">Sign Out</a>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Sidebar / Vertical Navigation Tabs -->
+            <div class="col-md-3 col-lg-2 mb-4">
+                <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+                    <button class="nav-link active shadow-sm mb-2" id="v-pills-dashboard-tab" data-bs-toggle="pill" data-bs-target="#v-pills-dashboard" type="button" role="tab" aria-controls="v-pills-dashboard" aria-selected="true">
+                        📈 BI Dashboard
+                    </button>
+                    <button class="nav-link shadow-sm mb-2" id="v-pills-prediction-tab" data-bs-toggle="pill" data-bs-target="#v-pills-prediction" type="button" role="tab" aria-controls="v-pills-prediction" aria-selected="false">
+                        ⚡ Predictive & Retention Engine
+                    </button>
+                    <button class="nav-link shadow-sm" id="v-pills-bulk-tab" data-bs-toggle="pill" data-bs-target="#v-pills-bulk" type="button" role="tab" aria-controls="v-pills-bulk" aria-selected="false">
+                        📁 Bulk Data Upload
+                    </button>
+                </div>
+            </div>
+
+            <!-- Main Content Area -->
+            <div class="col-md-9 col-lg-10">
+                <div class="tab-content" id="v-pills-tabContent">
+                    
+                    <!-- TAB 1: BI Dashboard -->
+                    <div class="tab-pane fade show active" id="v-pills-dashboard" role="tabpanel" aria-labelledby="v-pills-dashboard-tab">
+                        
+                        <!-- KPI Summary Metric Cards -->
+                        <div class="row g-3 mb-4">
+                            <div class="col-xl-3 col-md-6">
+                                <div class="bi-kpi-card p-3">
+                                    <span class="text-muted small fw-bold text-uppercase d-block">Total Customers</span>
+                                    <div class="d-flex align-items-baseline justify-content-between mt-1">
+                                        <h3 class="fw-bold text-dark mb-0">7,043</h3>
+                                        <span class="badge bg-success bg-opacity-10 text-success fw-semibold small">+1.2% MoM</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xl-3 col-md-6">
+                                <div class="bi-kpi-card p-3" style="border-left-color: #06b6d4;">
+                                    <span class="text-muted small fw-bold text-uppercase d-block">Avg Customer Tenure</span>
+                                    <div class="d-flex align-items-baseline justify-content-between mt-1">
+                                        <h3 class="fw-bold text-dark mb-0">32.37 <span class="fs-6 text-muted font-monospace">Mths</span></h3>
+                                        <span class="badge bg-info bg-opacity-10 text-info fw-semibold small">Stable</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xl-3 col-md-6">
+                                <div class="bi-kpi-card p-3" style="border-left-color: #f59e0b;">
+                                    <span class="text-muted small fw-bold text-uppercase d-block">Avg Monthly Charges</span>
+                                    <div class="d-flex align-items-baseline justify-content-between mt-1">
+                                        <h3 class="fw-bold text-dark mb-0">$64.76</h3>
+                                        <span class="badge bg-warning bg-opacity-10 text-warning fw-semibold small">High Yield</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xl-3 col-md-6">
+                                <div class="bi-kpi-card p-3" style="border-left-color: #10b981;">
+                                    <span class="text-muted small fw-bold text-uppercase d-block">Total Revenue</span>
+                                    <div class="d-flex align-items-baseline justify-content-between mt-1">
+                                        <h3 class="fw-bold text-dark mb-0">$16.06M</h3>
+                                        <span class="badge bg-success bg-opacity-10 text-success fw-semibold small">YTD Target</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- BI Visualizations Grid Row -->
+                        <div class="row g-4 mb-5">
+                            <div class="col-lg-4">
+                                <div class="bi-visual-card p-4 h-100">
+                                    <h6 class="fw-bold text-dark mb-3">Retention vs. Churn Rate</h6>
+                                    <div class="d-flex justify-content-center align-items-center" style="height: 250px;">
+                                        <canvas id="churnDonutChart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-4">
+                                <div class="bi-visual-card p-4 h-100">
+                                    <h6 class="fw-bold text-dark mb-3">Contract Types Distribution</h6>
+                                    <div class="d-flex justify-content-center align-items-center" style="height: 250px;">
+                                        <canvas id="contractPieChart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-4">
+                                <div class="bi-visual-card p-4 h-100">
+                                    <h6 class="fw-bold text-dark mb-3">Churn Rate by Internet Service (%)</h6>
+                                    <div class="d-flex justify-content-center align-items-center" style="height: 250px;">
+                                        <canvas id="internetBarChart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- TAB 2: Predictive & Retention Engine + History Log Table -->
+                    <div class="tab-pane fade" id="v-pills-prediction" role="tabpanel" aria-labelledby="v-pills-prediction-tab">
+                        <div class="bi-visual-card p-4 p-md-5 mb-4 shadow-sm">
+                            <div class="text-center mb-4">
+                                <h4 class="fw-bold text-dark">Real-Time Customer Attrition Risk & Retention Engine</h4>
+                                <p class="text-muted small">Input parameters to evaluate risk score and generate instant AI retention strategies.</p>
+                            </div>
+                            
+                            {% if prediction %}
+                            <div class="alert {% if prediction == 'Churn' %}alert-danger{% else %}alert-success{% endif %} text-center shadow-sm p-4 mb-4 rounded-3 border-0" role="alert">
+                                <h4 class="alert-heading fw-bold">Prediction Outcome: {{ prediction }}</h4>
+                                <p class="mb-0 fs-5">Calculated Attrition Probability: <strong>{{ (probability * 100) | round(1) }}%</strong></p>
+                            </div>
+
+                            <!-- Retention Suggestions Box -->
+                            <div class="card border-0 bg-light p-4 mb-4 rounded-3">
+                                <h5 class="fw-bold text-indigo mb-3">🛡️ Smart Retention Suggestions & Next Actions:</h5>
+                                <ul class="mb-0 ps-3">
+                                    {% for suggestion in suggestions %}
+                                        <li class="mb-2 text-secondary">{{ suggestion | safe }}</li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                            {% endif %}
+
+                            <form method="POST">
+                                <div class="row g-3">
+                                    <!-- Column 1 -->
+                                    <div class="col-md-4">
+                                        <div class="mb-3">
+                                            <label for="gender" class="form-label small fw-bold text-secondary">Gender</label>
+                                            <select id="gender" name="gender" class="form-select">
+                                                <option value="Male">Male</option>
+                                                <option value="Female">Female</option>
+                                            </select>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="SeniorCitizen" class="form-label small fw-bold text-secondary">Senior Citizen</label>
+                                            <select id="SeniorCitizen" name="SeniorCitizen" class="form-select">
+                                                <option value="0">No</option>
+                                                <option value="1">Yes</option>
+                                            </select>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="Partner" class="form-label small fw-bold text-secondary">Partner</label>
+                                            <select id="Partner" name="Partner" class="form-select">
+                                                <option value="Yes">Yes</option>
+                                                <option value="No">No</option>
+                                            </select>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="Dependents" class="form-label small fw-bold text-secondary">Dependents</label>
+                                            <select id="Dependents" name="Dependents" class="form-select">
+                                                <option value="Yes">Yes</option>
+                                                <option value="No">No</option>
+                                            </select>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="tenure" class="form-label small fw-bold text-secondary">Tenure (Months)</label>
+                                            <input type="number" id="tenure" name="tenure" class="form-control" placeholder="e.g. 12" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="PhoneService" class="form-label small fw-bold text-secondary">Phone Service</label>
+                                            <select id="PhoneService" name="PhoneService" class="form-select">
+                                                <option value="Yes">Yes</option>
+                                                <option value="No">No</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <!-- Column 2 -->
+                                    <div class="col-md-4">
+                                        <div class="mb-3">
+                                            <label for="MultipleLines" class="form-label small fw-bold text-secondary">Multiple Lines</label>
+                                            <select id="MultipleLines" name="MultipleLines" class="form-select">
+                                                <option value="Yes">Yes</option>
+                                                <option value="No">No</option>
+                                                <option value="No phone service">No phone service</option>
+                                            </select>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="InternetService" class="form-label small fw-bold text-secondary">Internet Service</label>
+                                            <select id="InternetService" name="InternetService" class="form-select">
+                                                <option value="DSL">DSL</option>
+                                                <option value="Fiber optic">Fiber optic</option>
+                                                <option value="No">No</option>
+                                            </select>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="OnlineSecurity" class="form-label small fw-bold text-secondary">Online Security</label>
+                                            <select id="OnlineSecurity" name="OnlineSecurity" class="form-select">
+                                                <option value="Yes">Yes</option>
+                                                <option value="No">No</option>
+                                                <option value="No internet service">No internet service</option>
+                                            </select>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="OnlineBackup" class="form-label small fw-bold text-secondary">Online Backup</label>
+                                            <select id="OnlineBackup" name="OnlineBackup" class="form-select">
+                                                <option value="Yes">Yes</option>
+                                                <option value="No">No</option>
+                                                <option value="No internet service">No internet service</option>
+                                            </select>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="DeviceProtection" class="form-label small fw-bold text-secondary">Device Protection</label>
+                                            <select id="DeviceProtection" name="DeviceProtection" class="form-select">
+                                                <option value="Yes">Yes</option>
+                                                <option value="No">No</option>
+                                                <option value="No internet service">No internet service</option>
+                                            </select>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="TechSupport" class="form-label small fw-bold text-secondary">Tech Support</label>
+                                            <select id="TechSupport" name="TechSupport" class="form-select">
+                                                <option value="Yes">Yes</option>
+                                                <option value="No">No</option>
+                                                <option value="No internet service">No internet service</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <!-- Column 3 -->
+                                    <div class="col-md-4">
+                                        <div class="mb-3">
+                                            <label for="StreamingTV" class="form-label small fw-bold text-secondary">Streaming TV</label>
+                                            <select id="StreamingTV" name="StreamingTV" class="form-select">
+                                                <option value="Yes">Yes</option>
+                                                <option value="No">No</option>
+                                                <option value="No internet service">No internet service</option>
+                                            </select>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="StreamingMovies" class="form-label small fw-bold text-secondary">Streaming Movies</label>
+                                            <select id="StreamingMovies" name="StreamingMovies" class="form-select">
+                                                <option value="Yes">Yes</option>
+                                                <option value="No">No</option>
+                                                <option value="No internet service">No internet service</option>
+                                            </select>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="Contract" class="form-label small fw-bold text-secondary">Contract</label>
+                                            <select id="Contract" name="Contract" class="form-select">
+                                                <option value="Month-to-month">Month-to-month</option>
+                                                <option value="One year">One year</option>
+                                                <option value="Two year">Two year</option>
+                                            </select>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="PaperlessBilling" class="form-label small fw-bold text-secondary">Paperless Billing</label>
+                                            <select id="PaperlessBilling" name="PaperlessBilling" class="form-select">
+                                                <option value="Yes">Yes</option>
+                                                <option value="No">No</option>
+                                            </select>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="PaymentMethod" class="form-label small fw-bold text-secondary">Payment Method</label>
+                                            <select id="PaymentMethod" name="PaymentMethod" class="form-select">
+                                                <option value="Electronic check">Electronic check</option>
+                                                <option value="Mailed check">Mailed check</option>
+                                                <option value="Bank transfer (automatic)">Bank transfer (automatic)</option>
+                                                <option value="Credit card (automatic)">Credit card (automatic)</option>
+                                            </select>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="MonthlyCharges" class="form-label small fw-bold text-secondary">Monthly Charges ($)</label>
+                                            <input type="number" step="0.01" id="MonthlyCharges" name="MonthlyCharges" class="form-control" placeholder="e.g. 70.35" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="TotalCharges" class="form-label small fw-bold text-secondary">Total Charges ($)</label>
+                                            <input type="number" step="0.01" id="TotalCharges" name="TotalCharges" class="form-control" placeholder="e.g. 1500.00" required>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mt-4 text-center">
+                                    <button type="submit" class="btn btn-bi text-white w-50 py-3 shadow-sm">Evaluate Churn Risk & Track Activity</button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- Customer Behavior Tracking & Prediction History Log Table -->
+                        <div class="bi-visual-card p-4 mb-5">
+                            <h5 class="fw-bold text-dark mb-3">📊 Real-Time Customer Behavior & Prediction History Log</h5>
+                            <p class="text-muted small">Tracks evaluated profiles, behavior inputs, and system outputs saved in database.</p>
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle small">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Customer ID</th>
+                                            <th>Timestamp</th>
+                                            <th>Gender</th>
+                                            <th>Tenure (Mths)</th>
+                                            <th>Contract</th>
+                                            <th>Monthly ($)</th>
+                                            <th>Prediction</th>
+                                            <th>Probability</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% if logs %}
+                                            {% for log in logs %}
+                                            <tr>
+                                                <td><span class="badge bg-secondary font-monospace">{{ log.customer_id }}</span></td>
+                                                <td>{{ log.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                                                <td>{{ log.gender }}</td>
+                                                <td>{{ log.tenure }}</td>
+                                                <td>{{ log.contract }}</td>
+                                                <td>${{ log.monthly_charges }}</td>
+                                                <td>
+                                                    <span class="badge {% if log.prediction == 'Churn' %}bg-danger{% else %}bg-success{% endif %}">
+                                                        {{ log.prediction }}
+                                                    </span>
+                                                </td>
+                                                <td><strong>{{ (log.probability * 100) | round(1) }}%</strong></td>
+                                            </tr>
+                                            {% endfor %}
+                                        {% else %}
+                                            <tr>
+                                                <td colspan="8" class="text-center text-muted py-3">No behavior logs recorded yet. Run a prediction above!</td>
+                                            </tr>
+                                        {% endif %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- TAB 3: Bulk Customer Data Upload -->
+                    <div class="tab-pane fade" id="v-pills-bulk" role="tabpanel" aria-labelledby="v-pills-bulk-tab">
+                        <div class="bi-visual-card p-4 p-md-5 mb-4 shadow-sm">
+                            <div class="text-center mb-4">
+                                <h4 class="fw-bold text-dark">📁 Bulk Customer Data Upload</h4>
+                                <p class="text-muted small">Upload a batch CSV file containing customer details to predict churn in bulk and save directly to the tracking database.</p>
+                            </div>
+
+                            {% if success %}
+                            <div class="alert alert-success text-center shadow-sm p-3 mb-4 rounded-3 border-0" role="alert">
+                                <strong>{{ success }}</strong>
+                            </div>
+                            {% endif %}
+
+                            <form action="/bulk-upload" method="POST" enctype="multipart/form-data" class="p-4 bg-light rounded-3 border">
+                                <div class="mb-3">
+                                    <label for="file" class="form-label fw-bold text-secondary">Select CSV File (Customer Churn Format)</label>
+                                    <input type="file" name="file" id="file" class="form-control" accept=".csv" required>
+                                </div>
+                                <div class="text-center mt-4">
+                                    <button type="submit" class="btn btn-bi text-white w-50 py-3 shadow-sm">Upload & Process Batch</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chart.js Visualization Scripts -->
+    <script>
+        const ctxChurn = document.getElementById('churnDonutChart').getContext('2d');
+        new Chart(ctxChurn, {
+            type: 'doughnut',
+            data: {
+                labels: ['Retained (73.5%)', 'Churned (26.5%)'],
+                datasets: [{
+                    data: [73.5, 26.5],
+                    backgroundColor: ['#4f46e5', '#06b6d4'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { family: 'Plus Jakarta Sans' } } } }
+            }
+        });
+
+        const ctxContract = document.getElementById('contractPieChart').getContext('2d');
+        new Chart(ctxContract, {
+            type: 'pie',
+            data: {
+                labels: ['Month-to-Month (55%)', 'Two Year (24%)', 'One Year (21%)'],
+                datasets: [{
+                    data: [55, 24, 21],
+                    backgroundColor: ['#4f46e5', '#06b6d4', '#818cf8'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { family: 'Plus Jakarta Sans' } } } }
+            }
+        });
+
+        const ctxInternet = document.getElementById('internetBarChart').getContext('2d');
+        new Chart(ctxInternet, {
+            type: 'bar',
+            data: {
+                labels: ['Fiber Optic', 'DSL', 'No Internet'],
+                datasets: [{
+                    label: 'Churn Rate %',
+                    data: [41.9, 19.0, 7.4],
+                    backgroundColor: ['#4f46e5', '#818cf8', '#cbd5e1'],
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: { 
+                    y: { beginAtZero: true, max: 50, grid: { color: '#f1f5f9' } },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+
+        // Auto-switch to Prediction Tab if a prediction result exists
+        {% if prediction %}
+        window.addEventListener('DOMContentLoaded', (event) => {
+            const predictionTabEl = document.querySelector('#v-pills-prediction-tab');
+            if (predictionTabEl) {
+                const tab = new bootstrap.Tab(predictionTabEl);
+                tab.show();
+            }
+        });
+        {% endif %}
+
+        // Auto-switch to Bulk Upload Tab if success message exists
+        {% if success %}
+        window.addEventListener('DOMContentLoaded', (event) => {
+            const bulkTabEl = document.querySelector('#v-pills-bulk-tab');
+            if (bulkTabEl) {
+                const tab = new bootstrap.Tab(bulkTabEl);
+                tab.show();
+            }
+        });
+        {% endif %}
+    </script>
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
